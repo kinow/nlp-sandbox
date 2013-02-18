@@ -1,0 +1,8 @@
+.classpath
+.pydevproject
+.buildpath
+.settings
+.project
+cache
+tmp
+user_guide
