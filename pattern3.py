@@ -24,5 +24,6 @@ with open('sentence-en') as content_file:
     print m
     
     if m != None:
+        # TODO: mark name as accused of harassment
         for w in m.words:
             print w
