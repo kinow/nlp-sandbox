@@ -16,10 +16,23 @@
 		</plugins>
 	</build>
 	<dependencies>
+		<!-- OpenNLP -->
 		<dependency>
 			<groupId>org.apache.opennlp</groupId>
 			<artifactId>opennlp-tools</artifactId>
 			<version>1.5.3</version>
+		</dependency>
+		<!-- Stanford CoreNLP -->
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>3.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>3.5.2</version>
+			<classifier>models</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
