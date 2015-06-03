@@ -83,7 +83,7 @@ public class ComparingStanfordOpenNLP {
 			pipeline.annotate(annotation);
 			List<CoreMap> sentences = annotation.get(SentencesAnnotation.class);
 			StringBuilder sb = new StringBuilder();
-			List tokens = new ArrayList<>();
+			List<EmbeddedToken> tokens = new ArrayList<>();
 			sentences.forEach(sentence -> {
 				String prevNeToken = "O";
 				String currNeToken = "O";
@@ -127,7 +127,7 @@ public class ComparingStanfordOpenNLP {
 	}
 
 	private static void handleEntity(String inKey, StringBuilder inSb,
-			List inTokens) {
+			List<EmbeddedToken> inTokens) {
 		System.out.println(String.format("'%s' is a %s", inSb, inKey));
 		inTokens.add(new EmbeddedToken(inKey, inSb.toString()));
 		inSb.setLength(0);
