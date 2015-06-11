@@ -33,17 +33,29 @@ import edu.stanford.nlp.util.CoreMap;
 public class ComparingStanfordOpenNLP {
 
 	private static void testOpennlpNER(List<CSVRecord> rows) throws Exception {
+		List<EmbeddedToken> found = new ArrayList<>();
+		found.addAll(testOpennlpNERInner(rows, "DATE", "en-ner-date.bin"));
+		found.addAll(testOpennlpNERInner(rows, "LOCATION", "en-ner-location.bin"));
+		found.addAll(testOpennlpNERInner(rows, "MONEY", "en-ner-money.bin"));
+		found.addAll(testOpennlpNERInner(rows, "ORG", "en-ner-organization.bin"));
+		found.addAll(testOpennlpNERInner(rows, "PERCENTAGE", "en-ner-percentage.bin"));
+		found.addAll(testOpennlpNERInner(rows, "NAME", "en-ner-person.bin"));
+		found.addAll(testOpennlpNERInner(rows, "TIME", "en-ner-time.bin"));
+	}
+	
+	private static List<EmbeddedToken> testOpennlpNERInner(List<CSVRecord> rows, String type, String model) throws Exception {
 		URI tokenModelInput = ComparingStanfordOpenNLP.class.getResource(
 				"/models/opennlp/en-us/tokenizer/en-token.bin").toURI();
 		TokenizerModel tokenModel = new TokenizerModel(tokenModelInput.toURL());
 		TokenizerME tokenizer = new TokenizerME(tokenModel);
 
 		URI nerModelInput = ComparingStanfordOpenNLP.class.getResource(
-				"/models/opennlp/en-us/ner/en-ner-person.bin").toURI();
+				"/models/opennlp/en-us/ner/" + model).toURI();
 		TokenNameFinderModel nerModel = new TokenNameFinderModel(
 				nerModelInput.toURL());
 		NameFinderME ner = new NameFinderME(nerModel);
 
+		List<EmbeddedToken> found = new ArrayList<>();
 		rows.forEach(record -> {
 			String text = record.get(1);
 			text = StringUtils.replace(text, "\\\"", "\"");
@@ -53,7 +65,6 @@ public class ComparingStanfordOpenNLP {
 			System.out.println(toText);
 			Span[] spans = ner.find(tokens);
 
-			System.out.println("Names:");
 			String[] names = Span.spansToStrings(spans, tokens);
 			for (String name : names) {
 				System.out.println(name);
@@ -169,4 +180,9 @@ public class ComparingStanfordOpenNLP {
 		}
 	}
 
+	static class Result {
+		private String text;
+		private List<EmbeddedToken> tokens = new ArrayList<ComparingStanfordOpenNLP.EmbeddedToken>();
+	}
+	
 }
