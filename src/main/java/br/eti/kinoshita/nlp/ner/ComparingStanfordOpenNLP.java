@@ -160,26 +160,6 @@ public class ComparingStanfordOpenNLP {
 		testStanfordNER(rows);
 	}
 
-	static class EmbeddedToken {
-
-		private String name;
-		private String value;
-
-		public String getName() {
-			return name;
-		}
-
-		public String getValue() {
-			return value;
-		}
-
-		public EmbeddedToken(String name, String value) {
-			super();
-			this.name = name;
-			this.value = value;
-		}
-	}
-
 	static class Result {
 		private String text;
 		private List<EmbeddedToken> tokens = new ArrayList<ComparingStanfordOpenNLP.EmbeddedToken>();
