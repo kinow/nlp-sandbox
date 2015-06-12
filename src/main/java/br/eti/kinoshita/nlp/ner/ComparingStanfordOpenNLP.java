@@ -3,8 +3,6 @@ package br.eti.kinoshita.nlp.ner;
 import java.io.File;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -33,43 +31,37 @@ import edu.stanford.nlp.util.CoreMap;
 public class ComparingStanfordOpenNLP {
 
 	private static void testOpennlpNER(List<CSVRecord> rows) throws Exception {
-		List<EmbeddedToken> found = new ArrayList<>();
-		found.addAll(testOpennlpNERInner(rows, "DATE", "en-ner-date.bin"));
-		found.addAll(testOpennlpNERInner(rows, "LOCATION", "en-ner-location.bin"));
-		found.addAll(testOpennlpNERInner(rows, "MONEY", "en-ner-money.bin"));
-		found.addAll(testOpennlpNERInner(rows, "ORG", "en-ner-organization.bin"));
-		found.addAll(testOpennlpNERInner(rows, "PERCENTAGE", "en-ner-percentage.bin"));
-		found.addAll(testOpennlpNERInner(rows, "NAME", "en-ner-person.bin"));
-		found.addAll(testOpennlpNERInner(rows, "TIME", "en-ner-time.bin"));
+		Result result = new Result();
+		testOpennlpNERInner(result, rows, "DATE", "en-ner-date.bin");
+		testOpennlpNERInner(result, rows, "LOCATION", "en-ner-location.bin");
+		testOpennlpNERInner(result, rows, "MONEY", "en-ner-money.bin");
+		testOpennlpNERInner(result, rows, "ORG", "en-ner-organization.bin");
+		testOpennlpNERInner(result, rows, "PERCENTAGE", "en-ner-percentage.bin");
+		testOpennlpNERInner(result, rows, "NAME", "en-ner-person.bin");
+		testOpennlpNERInner(result, rows, "TIME", "en-ner-time.bin");
+		result.printTo(System.out);
 	}
 	
-	private static List<EmbeddedToken> testOpennlpNERInner(List<CSVRecord> rows, String type, String model) throws Exception {
-		URI tokenModelInput = ComparingStanfordOpenNLP.class.getResource(
-				"/models/opennlp/en-us/tokenizer/en-token.bin").toURI();
+	private static void testOpennlpNERInner(Result result, List<CSVRecord> rows, String type, String model) throws Exception {
+		URI tokenModelInput = ComparingStanfordOpenNLP.class.getResource("/models/opennlp/en-us/tokenizer/en-token.bin").toURI();
 		TokenizerModel tokenModel = new TokenizerModel(tokenModelInput.toURL());
 		TokenizerME tokenizer = new TokenizerME(tokenModel);
 
-		URI nerModelInput = ComparingStanfordOpenNLP.class.getResource(
-				"/models/opennlp/en-us/ner/" + model).toURI();
-		TokenNameFinderModel nerModel = new TokenNameFinderModel(
-				nerModelInput.toURL());
+		URI nerModelInput = ComparingStanfordOpenNLP.class.getResource("/models/opennlp/en-us/ner/" + model).toURI();
+		TokenNameFinderModel nerModel = new TokenNameFinderModel(nerModelInput.toURL());
 		NameFinderME ner = new NameFinderME(nerModel);
 
-		List<EmbeddedToken> found = new ArrayList<>();
 		rows.forEach(record -> {
 			String text = record.get(1);
 			text = StringUtils.replace(text, "\\\"", "\"");
-			System.out.println(text);
 			String[] tokens = tokenizer.tokenize(text);
-			String toText = Arrays.toString(tokens);
-			System.out.println(toText);
+			//String toText = Arrays.toString(tokens);
 			Span[] spans = ner.find(tokens);
 
 			String[] names = Span.spansToStrings(spans, tokens);
 			for (String name : names) {
-				System.out.println(name);
+				result.addEntry(text, new EmbeddedToken(name, type));
 			}
-			System.out.println();
 
 			ner.clearAdaptiveData();
 		});
@@ -78,23 +70,20 @@ public class ComparingStanfordOpenNLP {
 	//http://www.informit.com/articles/article.aspx?p=2265404
 	private static void testStanfordNER(List<CSVRecord> rows) {
 		Properties props = new Properties();
-		props.setProperty("annotators",
-				"tokenize, ssplit, pos, lemma, ner, parse, dcoref");
+		props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref");
 		// props.setProperty("pos.model",
 		// "pos-tagger/english-bidirectional/english-bidirectional-distsim.tagger");
 		// props.setProperty("ner.model",
 		// "ner/english.all.3class.distsim.crf.ser.gz");
 		StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+		Result result = new Result();
 
 		rows.forEach(record -> {
-			String text = record.get(1);
-			text = StringUtils.replace(text, "\\\"", "\"");
-			System.out.println(text);
+			final String text = StringUtils.replace(record.get(1), "\\\"", "\"");
 			Annotation annotation = new Annotation(text);
 			pipeline.annotate(annotation);
 			List<CoreMap> sentences = annotation.get(SentencesAnnotation.class);
 			StringBuilder sb = new StringBuilder();
-			List<EmbeddedToken> tokens = new ArrayList<>();
 			sentences.forEach(sentence -> {
 				String prevNeToken = "O";
 				String currNeToken = "O";
@@ -108,7 +97,7 @@ public class ComparingStanfordOpenNLP {
 						// LOG.debug("Skipping '{}' classified as {}", word,
 						// currNeToken);
 						if (!prevNeToken.equals("O") && (sb.length() > 0)) {
-							handleEntity(prevNeToken, sb, tokens);
+							handleEntity(result, text, prevNeToken, sb);
 							newToken = true;
 						}
 						continue;
@@ -126,21 +115,18 @@ public class ComparingStanfordOpenNLP {
 					} else {
 						// We're done with the current entity - print it out and
 						// reset
-						// TODO save this token into an appropriate ADT to
-						// return for useful processing..
-						handleEntity(prevNeToken, sb, tokens);
+						handleEntity(result, text, prevNeToken, sb);
 						newToken = true;
 					}
 					prevNeToken = currNeToken;
 				}
 			});
+			result.printTo(System.out);
 		});
 	}
 
-	private static void handleEntity(String inKey, StringBuilder inSb,
-			List<EmbeddedToken> inTokens) {
-		System.out.println(String.format("'%s' is a %s", inSb, inKey));
-		inTokens.add(new EmbeddedToken(inKey, inSb.toString()));
+	private static void handleEntity(Result result, String text, String token, StringBuilder inSb) {
+		result.addEntry(text, new EmbeddedToken(inSb.toString(), token));
 		inSb.setLength(0);
 	}
 
@@ -158,11 +144,6 @@ public class ComparingStanfordOpenNLP {
 		testOpennlpNER(rows);
 		System.out.println("-------");
 		testStanfordNER(rows);
-	}
-
-	static class Result {
-		private String text;
-		private List<EmbeddedToken> tokens = new ArrayList<ComparingStanfordOpenNLP.EmbeddedToken>();
 	}
 	
 }
