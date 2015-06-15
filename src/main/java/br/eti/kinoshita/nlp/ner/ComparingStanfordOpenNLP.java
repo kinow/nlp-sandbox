@@ -121,12 +121,12 @@ public class ComparingStanfordOpenNLP {
 					prevNeToken = currNeToken;
 				}
 			});
-			result.printTo(System.out);
 		});
+		result.printTo(System.out);
 	}
 
 	private static void handleEntity(Result result, String text, String token, StringBuilder inSb) {
-		result.addEntry(text, new EmbeddedToken(inSb.toString(), token));
+		result.addEntry(text.trim(), new EmbeddedToken(inSb.toString(), token));
 		inSb.setLength(0);
 	}
 
