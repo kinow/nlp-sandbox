@@ -1,6 +1,8 @@
 package br.eti.kinoshita.nlp.ner;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -143,6 +145,10 @@ public class ComparingStanfordOpenNLP {
 		List<CSVRecord> rows = Collections.unmodifiableList(csv.getRecords());
 		testOpennlpNER(rows);
 		System.out.println("-------");
+		System.setErr(new PrintStream(new OutputStream() {
+		    public void write(int b) {
+		    }
+		}));
 		testStanfordNER(rows);
 	}
 	
