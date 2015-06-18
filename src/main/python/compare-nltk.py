@@ -19,7 +19,7 @@ def print_entity_names(names):
 		print '\'{}\' is a {}'.format(text.strip(), name[0])
 
 def main():
-	script_dir = os.path.dirname(__file__)
+	script_dir = os.path.dirname(os.path.realpath(__file__))
 
 	csv_file = open(script_dir + '/../resources/ner_test.csv', 'rb')
 	csv_reader = csv.reader(csv_file, delimiter=';', quotechar='\\')
@@ -29,12 +29,12 @@ def main():
 
 		tokens = nltk.word_tokenize(sentence)
 		pos_tags = nltk.pos_tag(tokens)
-		chuncked = nltk.ne_chunk(pos_tags)
+		ne_chunked = nltk.ne_chunk(pos_tags)
 
 		entity_names = []
 		print 'Text: [{}]'.format(sentence)
-		for chunck in chuncked:
-			entity_names.extend(extract_entity_names(chunck))
+		for ne_chunk in ne_chunked:
+			entity_names.extend(extract_entity_names(ne_chunk))
 			
 		print_entity_names(entity_names)
 		print ''
