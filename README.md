@@ -38,6 +38,7 @@ The CSV input file contained columns that would be used to compare the results, 
 
 ### OpenNLP
 
+```
 Text: [At just 22-years-old, Brandon Lipman bought his first property in Hamilton in April.]
 'April' is a DATE
 'Hamilton' is a LOCATION
@@ -55,9 +56,11 @@ Text: [The New Zealand Students' Association said Mr Lipman's story did not repr
 
 Text: [Martin Duncan is the owner of Freestyle Experiences, a Sunshine Coast food ambassador and a supporter of local food producers.]
 'Martin Duncan' is a NAME
+```
 
 ### CoreNLP
 
+```
 Text: [At just 22-years-old, Brandon Lipman bought his first property in Hamilton in April.]
 '22-years-old' is a DURATION
 'Brandon Lipman' is a PERSON
@@ -85,11 +88,13 @@ Text: ["Most students are wondering how they'll afford next week's rent or ever 
 Text: [Martin Duncan is the owner of Freestyle Experiences, a Sunshine Coast food ambassador and a supporter of local food producers.]
 'Martin Duncan' is a PERSON
 'Sunshine Coast' is a LOCATION
+```
 
 ## Python
 
 ### NLTK
 
+```
 Text: [At just 22-years-old, Brandon Lipman bought his first property in Hamilton in April.]
 'Brandon Lipman' is a PERSON
 'Hamilton' is a GPE
@@ -113,9 +118,11 @@ Text: [Martin Duncan is the owner of Freestyle Experiences, a Sunshine Coast foo
 'Duncan' is a ORGANIZATION
 'Freestyle Experiences' is a ORGANIZATION
 'Sunshine Coast' is a ORGANIZATION
+```
 
 ### Pattern
 
+```
 Text: [At just 22-years-old, Brandon Lipman bought his first property in Hamilton in April.]
 
 Text: [The University of Auckland commerce and science student saved for a $45,000 deposit for the $300,000 investment property by working from 9pm to 5am at Countdown for a year, and by living at his parent's house rent-free for two years.]
@@ -125,3 +132,4 @@ Text: [The New Zealand Students' Association said Mr Lipman's story did not repr
 Text: ["Most students are wondering how they'll afford next week's rent or ever pay back their mounting loan. Mr Lipman's story is the exception, not the reality," said association president Rory McCourt.]
 
 Text: [Martin Duncan is the owner of Freestyle Experiences, a Sunshine Coast food ambassador and a supporter of local food producers.]
+```
